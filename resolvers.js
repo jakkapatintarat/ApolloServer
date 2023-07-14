@@ -1,20 +1,17 @@
-const users = require('./models/users');
+const User = require('./models/users');
 
 const resolvers = {
     Query: {
-        users: () => users,
-        finduser: (parent, { id }) => users.find(user => user.id === id),
+        users: async () => await User.find({}),
+        user: async (_, { id }) => await User.findById(id),
     },
     Mutation: {
-        createuser: (parent, args) => {
-            const {name, email} = args;
-            const newUser = {
-                id: String(users.length +1),
-                name,
-                email,
-            };
-            users.push(newUser);
-            return newUser;
+        createUser: async (_, { name, email }) => {
+            const newUser = new User({ name, email });
+            return await newUser.save();
+        },
+        DelUser: async (_, { id }) => {
+            return await User.findByIdAndDelete(id);
         },
     }
 };
